@@ -3,26 +3,94 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #fffaf5;
+  --foreground: #181411;
+  --surface: #ffffff;
+  --surface-muted: #f8efe6;
+  --brand: #e6532f;
+  --brand-dark: #b9381c;
+  --ink-soft: #665c55;
+  --ring: rgba(230, 83, 47, 0.28);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+  text-rendering: optimizeLegibility;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
+  .animate-float {
+    animation: float 7s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float 8s ease-in-out 1.2s infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 620ms ease-out both;
+  }
 }
 
+@layer components {
+  .container-shell {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .glass-panel {
+    @apply border border-white/70 bg-white/75 shadow-[0_24px_80px_rgba(82,47,24,0.12)] backdrop-blur-xl;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-[#e6532f] px-5 py-3 font-semibold text-white shadow-[0_16px_32px_rgba(230,83,47,0.28)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#cf4322] hover:shadow-[0_20px_42px_rgba(230,83,47,0.34)] focus:outline-none focus:ring-4 focus:ring-[#e6532f]/25 disabled:cursor-not-allowed disabled:opacity-55 disabled:hover:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-[#ead8ca] bg-white/85 px-5 py-3 font-semibold text-[#33251d] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-[#e6532f]/45 hover:text-[#b9381c] focus:outline-none focus:ring-4 focus:ring-[#e6532f]/15;
+  }
+
+  .field-control {
+    @apply w-full rounded-2xl border border-[#ead8ca] bg-white/90 px-4 py-3 text-[#2c221b] shadow-sm outline-none transition focus:border-[#e6532f] focus:ring-4 focus:ring-[#e6532f]/15;
+  }
+}
+
+::selection {
+  background: rgba(230, 83, 47, 0.2);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

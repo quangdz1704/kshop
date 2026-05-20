@@ -119,6 +119,33 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    const admins = await prisma.user.findMany({
+      where: { role: 'ADMIN' },
+      select: { id: true },
+    });
+
+    await prisma.notification.createMany({
+      data: [
+        {
+          userId: session.user.id,
+          orderId: order.id,
+          type: 'ORDER_CREATED',
+          title: 'Đơn hàng đã được tạo',
+          message: `KShop đã nhận đơn #${order.id.slice(0, 8)}. Hoàn tất thanh toán để shop xử lý nhanh hơn.`,
+        },
+        ...admins.map((admin) => ({
+          userId: admin.id,
+          orderId: order.id,
+          type: 'ADMIN_NEW_ORDER',
+          title: 'Có đơn hàng mới',
+          message: `Đơn #${order.id.slice(0, 8)} vừa được tạo với tổng ${new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+          }).format(total)}.`,
+        })),
+      ],
+    });
+
     // Create MoMo payment
     try {
       const momoResponse = await createMoMoPayment(order.id, total);
@@ -158,4 +185,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

@@ -22,9 +22,8 @@ export default async function ProductDetailPage({
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container-shell py-10">
       <ProductDetail product={product} />
     </div>
   );
 }
-

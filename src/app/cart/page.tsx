@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import CartItem from '@/components/CartItem';
-import { ShoppingBag, Trash2 } from 'lucide-react';
+import { ArrowRight, BadgeCheck, ShoppingBag, Truck } from 'lucide-react';
 
 interface CartItem {
   id: string;
@@ -25,15 +25,7 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
 
-  useEffect(() => {
-    if (!session?.user) {
-      router.push('/auth/signin');
-      return;
-    }
-    fetchCart();
-  }, [session, router]);
-
-  const fetchCart = async () => {
+  const fetchCart = useCallback(async () => {
     try {
       const res = await fetch('/api/cart');
       const data = await res.json();
@@ -44,7 +36,15 @@ export default function CartPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (!session?.user) {
+      router.push('/auth/signin');
+      return;
+    }
+    fetchCart();
+  }, [fetchCart, session, router]);
 
   const calculateTotal = (items: CartItem[]) => {
     const sum = items.reduce((acc, item) => {
@@ -91,22 +91,22 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">Đang tải...</div>
+      <div className="container-shell py-10">
+        <div className="glass-panel rounded-[2rem] p-8 text-center">Đang tải...</div>
       </div>
     );
   }
 
   if (cartItems.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center py-12">
-          <ShoppingBag className="w-24 h-24 mx-auto text-gray-300 mb-4" />
-          <h2 className="text-2xl font-semibold mb-2">Giỏ hàng trống</h2>
-          <p className="text-gray-600 mb-6">Hãy thêm sản phẩm vào giỏ hàng của bạn</p>
+      <div className="container-shell py-10">
+        <div className="glass-panel mx-auto max-w-2xl rounded-[2.2rem] px-6 py-16 text-center">
+          <ShoppingBag className="mx-auto mb-5 h-20 w-20 text-[#e6532f]" />
+          <h2 className="text-3xl font-black text-[#181411]">Giỏ hàng trống</h2>
+          <p className="mx-auto mt-3 max-w-md text-[#665c55]">Hãy thêm sản phẩm vào giỏ hàng để bắt đầu checkout nhanh hơn.</p>
           <button
             onClick={() => router.push('/products')}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+            className="btn-primary mt-7"
           >
             Mua sắm ngay
           </button>
@@ -116,10 +116,25 @@ export default function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Giỏ hàng</h1>
+    <div className="container-shell py-10">
+      <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div>
+          <p className="text-sm font-bold uppercase tracking-[0.22em] text-[#e6532f]">Checkout ready</p>
+          <h1 className="mt-3 text-4xl font-black text-[#181411] sm:text-5xl">Giỏ hàng</h1>
+        </div>
+        <div className="flex gap-2 text-sm font-semibold text-[#665c55]">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/75 px-4 py-2">
+            <Truck className="h-4 w-4 text-[#e6532f]" />
+            Giao nhanh
+          </span>
+          <span className="hidden items-center gap-2 rounded-full bg-white/75 px-4 py-2 sm:inline-flex">
+            <BadgeCheck className="h-4 w-4 text-[#e6532f]" />
+            Xác nhận đơn rõ ràng
+          </span>
+        </div>
+      </div>
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid gap-8 md:grid-cols-3">
         <div className="md:col-span-2 space-y-4">
           {cartItems.map((item) => (
             <CartItem
@@ -131,11 +146,11 @@ export default function CartPage() {
           ))}
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6 h-fit">
-          <h2 className="text-xl font-semibold mb-4">Tổng kết</h2>
-          <div className="space-y-2 mb-4">
-            <div className="flex justify-between">
-              <span>Tạm tính:</span>
+        <div className="glass-panel h-fit rounded-[2rem] p-6 md:sticky md:top-24">
+          <h2 className="mb-5 text-2xl font-black text-[#181411]">Tổng kết</h2>
+          <div className="mb-5 space-y-3">
+            <div className="flex justify-between text-[#665c55]">
+              <span>Tạm tính</span>
               <span>
                 {new Intl.NumberFormat('vi-VN', {
                   style: 'currency',
@@ -143,9 +158,9 @@ export default function CartPage() {
                 }).format(total)}
               </span>
             </div>
-            <div className="flex justify-between font-bold text-lg pt-2 border-t">
-              <span>Tổng cộng:</span>
-              <span className="text-blue-600">
+            <div className="flex justify-between border-t border-[#ead8ca] pt-4 text-lg font-black">
+              <span>Tổng cộng</span>
+              <span className="text-[#e6532f]">
                 {new Intl.NumberFormat('vi-VN', {
                   style: 'currency',
                   currency: 'VND',
@@ -155,13 +170,13 @@ export default function CartPage() {
           </div>
           <button
             onClick={handleCheckout}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+            className="btn-primary w-full"
           >
             Thanh toán
+            <ArrowRight className="h-5 w-5" />
           </button>
         </div>
       </div>
     </div>
   );
 }
-

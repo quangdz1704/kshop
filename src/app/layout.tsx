@@ -8,8 +8,8 @@ import { FacebookMessenger } from "@/components/FacebookMessenger";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "KShop - Cửa hàng trực tuyến",
-  description: "Mua sắm trực tuyến với giá tốt nhất",
+  title: "KShop - Mua sắm tinh chọn",
+  description: "Khám phá sản phẩm đẹp, giá tốt và trải nghiệm mua sắm mượt mà",
 };
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <Navbar />
-          <main className="min-h-screen bg-gray-50">
+          <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(230,83,47,0.14),transparent_34%),linear-gradient(180deg,#fffaf5_0%,#fff7ef_44%,#f7eee6_100%)]">
             {children}
           </main>
           <FacebookMessenger />
@@ -31,4 +31,3 @@ export default function RootLayout({
     </html>
   );
 }
-

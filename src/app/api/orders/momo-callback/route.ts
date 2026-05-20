@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     // Update order status
     if (resultCode === 0) {
-      await prisma.order.update({
+      const order = await prisma.order.update({
         where: { id: orderId },
         data: {
           paymentStatus: 'PAID',
@@ -46,11 +46,29 @@ export async function POST(request: NextRequest) {
           momoTransactionId: transId,
         },
       });
+      await prisma.notification.create({
+        data: {
+          userId: order.userId,
+          orderId: order.id,
+          type: 'PAYMENT_SUCCESS',
+          title: 'Thanh toán thành công',
+          message: `Đơn #${order.id.slice(0, 8)} đã được xác nhận và chuyển sang xử lý.`,
+        },
+      });
     } else {
-      await prisma.order.update({
+      const order = await prisma.order.update({
         where: { id: orderId },
         data: {
           paymentStatus: 'FAILED',
+        },
+      });
+      await prisma.notification.create({
+        data: {
+          userId: order.userId,
+          orderId: order.id,
+          type: 'PAYMENT_FAILED',
+          title: 'Thanh toán chưa hoàn tất',
+          message: `Đơn #${order.id.slice(0, 8)} chưa thanh toán thành công. Vui lòng thử lại hoặc liên hệ shop.`,
         },
       });
     }
@@ -64,4 +82,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
