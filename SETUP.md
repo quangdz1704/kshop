@@ -45,6 +45,33 @@ npm run db:seed
 ```
 
 > Dự án dùng **Prisma 7**: `DATABASE_URL` cấu hình trong `.env`, connection URL cho CLI nằm ở `prisma.config.ts`.
+> Nếu `DATABASE_URL` bắt đầu bằng `postgres://` hoặc `postgresql://`, Prisma sẽ dùng `prisma/schema.postgres.prisma`. Nếu là `file:`, Prisma dùng SQLite local qua `prisma/schema.prisma`.
+
+## PostgreSQL production
+
+Khi deploy production, set:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
+# Nếu provider có pooled URL và direct URL, app dùng DATABASE_URL, CLI migration dùng DIRECT_URL.
+# DIRECT_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
+NEXTAUTH_URL="https://your-domain.com"
+NEXTAUTH_SECRET="your-strong-secret"
+MOMO_ENVIRONMENT=production
+```
+
+Chạy migration production:
+
+```bash
+npm run db:migrate:deploy
+npm run db:generate
+```
+
+Tạo migration PostgreSQL lần đầu trên máy có `DATABASE_URL` trỏ tới PostgreSQL:
+
+```bash
+npm run db:migrate -- --name init_postgres
+```
 
 ## Bước 4: Chạy development server
 

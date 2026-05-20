@@ -1,5 +1,6 @@
 import path from "path";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/prisma/client";
 
 function resolveSqliteUrl(url: string): string {
@@ -10,8 +11,12 @@ function resolveSqliteUrl(url: string): string {
 }
 
 function createPrismaClient() {
-  const url = resolveSqliteUrl(process.env.DATABASE_URL ?? "file:./dev.db");
-  const adapter = new PrismaBetterSqlite3({ url });
+  const databaseUrl = process.env.DATABASE_URL ?? "file:./dev.db";
+  const isPostgres = /^(postgres|postgresql):\/\//.test(databaseUrl);
+  const adapter = isPostgres
+    ? new PrismaPg({ connectionString: databaseUrl })
+    : new PrismaBetterSqlite3({ url: resolveSqliteUrl(databaseUrl) });
+
   return new PrismaClient({ adapter });
 }
 

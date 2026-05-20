@@ -134,12 +134,20 @@ kshop/
 Để dùng PostgreSQL trên production:
 
 1. Tạo database PostgreSQL (Railway, Supabase, Neon, etc.)
-2. Cập nhật `DATABASE_URL` trong `.env`
-3. Chạy migration:
+2. Cập nhật `DATABASE_URL` trong `.env` hoặc dashboard deploy:
+
+```env
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
+```
+
+3. App tự dùng `prisma/schema.postgres.prisma` và `@prisma/adapter-pg` khi `DATABASE_URL` là PostgreSQL. Local dev vẫn dùng SQLite nếu `DATABASE_URL="file:./dev.db"`.
+4. Chạy migration:
 
 ```bash
-npx prisma migrate deploy
+npm run db:migrate:deploy
 ```
+
+> Chỉ biến có prefix `NEXT_PUBLIC_` mới được bundle xuống client. Các secret như `DATABASE_URL`, `NEXTAUTH_SECRET`, `MOMO_SECRET_KEY` không public; `NEXT_PUBLIC_FB_PAGE_ID` là public.
 
 ## MoMo Payment Setup
 
@@ -164,4 +172,3 @@ npx prisma migrate deploy
 ## License
 
 MIT
-
