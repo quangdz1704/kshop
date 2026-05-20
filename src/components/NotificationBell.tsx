@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Bell, CheckCheck, Clock3 } from 'lucide-react';
+import { NOTIFICATION_INTERVAL } from '@/constants';
 
 interface Notification {
   id: string;
@@ -56,7 +57,7 @@ export default function NotificationBell() {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = window.setInterval(fetchNotifications, 12000);
+    const interval = window.setInterval(fetchNotifications, NOTIFICATION_INTERVAL);
     return () => window.clearInterval(interval);
   }, [fetchNotifications]);
 
@@ -123,11 +124,10 @@ export default function NotificationBell() {
                   key={item.id}
                   href="/orders"
                   onClick={() => setOpen(false)}
-                  className={`mb-2 block rounded-2xl border p-4 transition hover:-translate-y-0.5 ${
-                    item.read
-                      ? 'border-[#f0e4da] bg-white/70'
-                      : 'border-[#f5c8b8] bg-[#fff3eb]'
-                  }`}
+                  className={`mb-2 block rounded-2xl border p-4 transition hover:-translate-y-0.5 ${item.read
+                    ? 'border-[#f0e4da] bg-white/70'
+                    : 'border-[#f5c8b8] bg-[#fff3eb]'
+                    }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
